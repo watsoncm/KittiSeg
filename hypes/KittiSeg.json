@@ -51,8 +51,7 @@
     "eval_iter": 100,
     "write_iter": 100,
     "save_iter": 2000,
-    "image_iter": 20000
-  },
+    "image_iter": 20000 },
 
   "solver": {
       "opt": "Adam",

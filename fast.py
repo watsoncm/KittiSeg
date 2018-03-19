@@ -118,13 +118,20 @@ def main(_):
     #######
 
     ga_content = {'encoder_name': 'fcn8_vgg',
-                  'encoder_path': hypes['model']['architecture_file'], 'drop': []}
+                  'encoder_path': hypes['model']['architecture_file'], 
+                  'drop': ['conv4_1']}
     hypes['model']['architecture_file'] = '../encoder/stub.py'
     hypes['ga_data'] = 'ga_data.json'
 
+    with open(hypes['ga_data'], 'w') as f:
+        commentjson.dump(ga_content, f)
+   
+    train.do_training(hypes)
+    
+
 # pass on to next generation??
 
-
+    """
     prevTopDropLists = []
     for i in NUM_GENERATIONS:
         childrenRuntime = np.zeros(MEMBERS_PER_GEN)
@@ -169,14 +176,7 @@ def combineDropLists(Lists, length):
         return combinedList
     else:
         return []
-
-
-
-
-
-
-
-
+    """
 
 if __name__ == '__main__':
     tf.app.run()

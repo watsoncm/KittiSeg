@@ -7,7 +7,6 @@ import commentjson
 import tensorflow as tf
 
 
-
 def inference(hypes, images, train=True):
     with open(hypes['ga_data']) as f:
         ga_data = commentjson.load(f)
@@ -18,15 +17,37 @@ def inference(hypes, images, train=True):
     logits = encoder.inference(hypes, images, train=True)
     graph = tf.get_default_graph()
 
-    for dropout in ga_data['drop_dropouts']
-        subgraph = tf.contrib.graph_editor.make_view_from_scope(dropout, graph)
-        sgv_input = subgraph.inputs[0]
-        tf.contrib.graph_editor.detach_inputs(sgv_input)
-        reroute.reroute_ts([sgv_input], list(sgv.outputs)[0])
+    for layer in ga_data['drop']:
+        subgraph = tf.contrib.graph_editor.make_view_from_scope(layer, graph)
+        sgv_input = list(subgraph.inputs)[0]
 
-    
-    # all_ops = tf.contrib.graph_editor.get_forward_walk_ops(images, stop_at_ts=(logits['fcn_logits']))
-    # conv_ops = tf.contrib.graph_editor.filter_ops(all_ops, lambda op: op.type == "Conv2D")
-    # dropout_ops = tf.contrib.graph_editor.filter_ops(all_ops, lambda op: op.type == "Dropout")
-    # print(conv_ops)
-    # print(dropout_ops)
+        if 'dropout' in layer: 
+            subgraph, _ = tf.contrib.graph_editor.bypass(subgraph)
+        elif layer in ['conv4_1', 'conv3_1', 'conv2_1']:
+            tf.contrib.graph_editor.detach_inputs(subgraph)
+            tile = tf.tile(sgv_input, multiples=[1, 1, 1, 2])
+            sgv_output = graph.get_tensor_by_name('{}/Relu:0'.format(layer))
+            tf.contrib.graph_editor.reroute_ts([tile], [sgv_output])
+        elif 'conv' in layer or 'fc7' in layer:
+            tf.contrib.graph_editor.detach_inputs(subgraph)
+            sgv_output = graph.get_tensor_by_name('{}/Relu:0'.format(layer))
+            tf.contrib.graph_editor.reroute_ts([sgv_input], [sgv_output])
+        elif 'fc6' in layer:
+            tf.contrib.graph_editor.detach_inputs(subgraph)
+            tile = tf.tile(sgv_input, multiples=[1, 1, 1, 8])
+            sgv_output = graph.get_tensor_by_name('{}/Relu:0'.format(layer))
+            tf.contrib.graph_editor.reroute_ts([tile], [sgv_output])
+        elif 'score_pool3' in layer:
+            add = graph.get_operation_by_name('Add_1')
+            sgv_input= graph.get_tensor_by_name('upscore4/conv2d_transpose:0')
+            sgv_output = list(add.outputs)[0]
+            tf.contrib.graph_editor.detach_inputs(add)
+            tf.contrib.graph_editor.reroute_ts([sgv_input], [sgv_output])
+        elif 'score_pool4' in layer:
+            add = graph.get_operation_by_name('Add')
+            sgv_input= graph.get_tensor_by_name('upscore2/conv2d_transpose:0')
+            sgv_output = list(add.outputs)[0]
+            tf.contrib.graph_editor.detach_inputs(add)
+            tf.contrib.graph_editor.reroute_ts([sgv_input], [sgv_output])
+ 
+    return logits 
