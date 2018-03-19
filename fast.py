@@ -31,18 +31,12 @@ layerPrior = [0.1, 0.1, 0.2, 0.2, 0.3, 0.3,
 fastDict = {'drop_layers': []}
 
 # configure logging
-if 'TV_IS_DEV' in os.environ and os.environ['TV_IS_DEV']:
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
-                        level=logging.INFO,
-                        stream=sys.stdout)
-else:
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
-                        level=logging.INFO,
-                        stream=sys.stdout)
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
+		level=logging.INFO,
+		stream=sys.stdout)
 
 # https://github.com/tensorflow/tensorflow/issues/2034#issuecomment-220820070
 import numpy as np
-
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS

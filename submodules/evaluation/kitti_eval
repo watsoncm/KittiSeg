@@ -194,6 +194,7 @@ def tensor_eval(hypes, sess, image_pl, softmax):
     eval_list.append(('MaxF1', 100*eval_dict['MaxF']))
     eval_list.append(('BestThresh', 100*eval_dict['BestThresh']))
     eval_list.append(('Average Precision', 100*eval_dict['AvgPrec']))
+    eval_list.append(('Duration', duration)
 
     return eval_list, images
 
