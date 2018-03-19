@@ -20,11 +20,13 @@ def inference(hypes, images, train=True):
 
     for dropout in ga_data['drop_dropouts']
         subgraph = tf.contrib.graph_editor.make_view_from_scope(dropout, graph)
-        
-    if 
+        sgv_input = subgraph.inputs[0]
+        tf.contrib.graph_editor.detach_inputs(sgv_input)
+        reroute.reroute_ts([sgv_input], list(sgv.outputs)[0])
+
     
-    all_ops = tf.contrib.graph_editor.get_forward_walk_ops(images, stop_at_ts=(logits['fcn_logits']))
-    conv_ops = tf.contrib.graph_editor.filter_ops(all_ops, lambda op: op.type == "Conv2D")
-    dropout_ops = tf.contrib.graph_editor.filter_ops(all_ops, lambda op: op.type == "Dropout")
-    print(conv_ops)
-    print(dropout_ops)
+    # all_ops = tf.contrib.graph_editor.get_forward_walk_ops(images, stop_at_ts=(logits['fcn_logits']))
+    # conv_ops = tf.contrib.graph_editor.filter_ops(all_ops, lambda op: op.type == "Conv2D")
+    # dropout_ops = tf.contrib.graph_editor.filter_ops(all_ops, lambda op: op.type == "Dropout")
+    # print(conv_ops)
+    # print(dropout_ops)

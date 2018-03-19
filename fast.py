@@ -17,6 +17,10 @@ import string
 
 import collections
 
+
+NUM_GENERATIONS = 10
+MEMBERS_PER_GEN = 5
+
 # configure logging
 if 'TV_IS_DEV' in os.environ and os.environ['TV_IS_DEV']:
     logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
@@ -85,16 +89,6 @@ def main(_):
         hypes = commentjson.load(f)
     utils.load_plugins()
 
-    print(hypes)
-
-    ga_content = {'encoder_name': 'fcn8_vgg',
-                  'encoder_path': hypes['model']['architecture_file']}
-    hypes['model']['architecture_file'] = '../encoder/stub.py'
-    hypes['ga_data'] = 'ga_data.json'
-
-    with open(hypes['ga_data'], 'w') as f:
-        commentjson.dump(ga_content, f)
-
     if tf.app.flags.FLAGS.mod is not None:
         import ast
         mod_dict = ast.literal_eval(tf.app.flags.FLAGS.mod)
@@ -111,6 +105,21 @@ def main(_):
     logging.info("Initialize training folder")
     train.initialize_training_folder(hypes)
     logging.info("Start training")
+  
+    #######
+
+    ga_content = {'encoder_name': 'fcn8_vgg',
+                  'encoder_path': hypes['model']['architecture_file']}
+    hypes['model']['architecture_file'] = '../encoder/stub.py'
+    hypes['ga_data'] = 'ga_data.json'
+
+    
+    with open(hypes['ga_data'], 'w') as f:
+        commentjson.dump(ga_content, f)
+
+    for i in NUM_GENERATIONS:
+        pass
+
     train.do_training(hypes)
 
 
