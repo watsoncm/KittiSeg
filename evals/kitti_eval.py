@@ -130,7 +130,6 @@ def evaluate(hypes, sess, image_pl, inf_out):
                     total_fn += FN
                     total_posnum += posNum
                     total_negnum += negNum
-                    break #TODO REMOVE
 
         eval_dict[phase] = seg.pxEval_maximizeFMeasure(
             total_posnum, total_negnum, total_fn, total_fp, thresh=thresh)
