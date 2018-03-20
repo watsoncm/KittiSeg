@@ -1,1 +1,1 @@
-{"drop": ["conv4_1"], "encoder_path": "../encoder/fcn8_vgg.py", "encoder_name": "fcn8_vgg"}
+{"drop": ["conv2_2", "conv2_1"], "encoder_path": "../encoder/fcn8_vgg.py", "encoder_name": "fcn8_vgg"}

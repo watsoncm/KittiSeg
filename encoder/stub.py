@@ -8,11 +8,13 @@ import tensorflow as tf
 
 
 def inference(hypes, images, train=True):
+    print('INFERRING')
     with open(hypes['ga_data']) as f:
         ga_data = commentjson.load(f)
 
+    print('READ')
     encoder_path = os.path.join(os.path.dirname(__file__), 
-                   os.path.basename(ga_data['encoder_path']))
+                                os.path.basename(ga_data['encoder_path']))
     encoder = imp.load_source(ga_data['encoder_name'], encoder_path)
     logits = encoder.inference(hypes, images, train=True)
     graph = tf.get_default_graph()
@@ -29,6 +31,7 @@ def inference(hypes, images, train=True):
             sgv_output = graph.get_tensor_by_name('{}/Relu:0'.format(layer))
             tf.contrib.graph_editor.reroute_ts([tile], [sgv_output])
         elif 'conv' in layer or 'fc7' in layer:
+            print('heyyyy')
             tf.contrib.graph_editor.detach_inputs(subgraph)
             sgv_output = graph.get_tensor_by_name('{}/Relu:0'.format(layer))
             tf.contrib.graph_editor.reroute_ts([sgv_input], [sgv_output])
